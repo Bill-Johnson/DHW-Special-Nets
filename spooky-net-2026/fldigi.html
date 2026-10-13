@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Getting Audio into Fldigi · Spooky Net 2026</title>
+<meta name="description" content="Help, tips and spooky tricks for getting any receiver's audio into Fldigi and Flamp to copy Spooky Net 2026.">
+<link rel="stylesheet" href="spooky.css">
+</head>
+<body>
+<main>
+
+<a class="back" href="./">&larr; Spooky Net 2026</a>
+<header style="margin-top:22px">
+  <div class="eyebrow">Spooky Net 2026 · Help, tips &amp; spooky tricks</div>
+  <h1 class="small">Getting audio into <span>Fldigi</span></h1>
+</header>
+
+<p style="margin-top:8px">Fldigi doesn't care where the sound comes from. If it can hear the signal, it can decode it. Here are the ways in, from the usual to the downright spooky. Pick one, then do the setup at the bottom.</p>
+
+<h2>1. Get the software</h2>
+<p>Download <b>Fldigi</b> and <b>Flamp</b> from W1HKJ: <a href="http://www.w1hkj.com/">w1hkj.com</a>. Both are free and run on Windows, Mac, Linux and Raspberry Pi. On Linux they're usually in your package manager too.</p>
+
+<h2>2. Pick your way in</h2>
+<div class="panel">
+  <div class="seg">
+    <h3>A radio with a USB port</h3>
+    <p>Many newer rigs have a sound card built in. Connect the USB cable, and the radio shows up on the computer as a sound device with a name like <code>USB Audio CODEC</code>. In Fldigi, open <b>Configure &rarr; Sound Card &rarr; Audio &rarr; Devices</b> and choose it as the <b>Capture</b> device.</p>
+  </div>
+  <div class="seg">
+    <h3>A cable from any receiver</h3>
+    <p>Run a cable from the receiver's headphone, line-out or data jack to the computer's line-in or mic jack. A cheap USB sound card dongle works great if your computer has no input jack. Interfaces like a SignaLink do the same job. Choose that input as the Capture device in Fldigi.</p>
+  </div>
+  <div class="seg">
+    <h3>An SDR</h3>
+    <p>Run your SDR program (SDR++, SDR#, SDRuno, GQRX and so on) in USB mode on 7.121 MHz. Then send its audio output into Fldigi with a <b>virtual audio cable</b>:</p>
+    <ul style="margin-top:8px">
+      <li><b>Windows:</b> VB-Audio Virtual Cable. Set the SDR's output to <code>CABLE Input</code> and Fldigi's capture to <code>CABLE Output</code>.</li>
+      <li><b>Mac:</b> BlackHole. Use it as the SDR's output and Fldigi's input.</li>
+      <li><b>Linux:</b> PipeWire or PulseAudio. In <code>pavucontrol</code>, set Fldigi's recording source to the <code>Monitor of</code> your speakers.</li>
+    </ul>
+    <p style="margin-top:8px">A cheap RTL-SDR dongle needs direct sampling mode or an upconverter to hear 40 meters.</p>
+  </div>
+  <div class="seg">
+    <h3>Spooky trick: no radio at all</h3>
+    <p>Borrow someone else's receiver over the internet. <b>WebSDR</b> (<a href="http://websdr.org/">websdr.org</a>) and <b>KiwiSDR</b> (<a href="http://rx.linkfanel.net/">rx.linkfanel.net</a>) list hundreds of receivers you can tune from a web browser. Pick one a few hundred miles from the net, tune it to 7.121 USB, and route the browser's sound into Fldigi with the same virtual cable as an SDR.</p>
+  </div>
+  <div class="seg">
+    <h3>Spookiest trick: just listen</h3>
+    <p>Set Fldigi's capture device to your computer's built-in microphone and hold it near the radio's speaker. In a quiet room, MFSK32 copies this way surprisingly well. It's a good way to save a night when the cable has gone missing.</p>
+  </div>
+</div>
+
+<h2>3. Set up Fldigi</h2>
+<ol>
+  <li>Tune to <b>7.121 MHz USB</b>. (On a WebSDR or SDR, set the mode to USB as well.)</li>
+  <li>Choose the mode: <b>Op Mode &rarr; MFSK &rarr; MFSK-32</b>.</li>
+  <li>Click the waterfall at <b>1000 Hz</b>. The red cursor sits there and Fldigi decodes what's under it.</li>
+  <li>Turn <b>RxID on</b> (the RxID button near the top right). Fldigi will jump to any signal that announces itself, even if the net changes modes or drifts off 1000 Hz.</li>
+  <li>Leave <b>TxID off</b> if you're also a transmitting station.</li>
+</ol>
+
+<h2>4. Set the level</h2>
+<p>Too much audio is just as bad as too little.</p>
+<ul>
+  <li><b>Good:</b> the waterfall background is dark blue with a few speckles, and signals show up as bright tracks.</li>
+  <li><b>Too hot:</b> the whole waterfall is yellow or red. Turn the receiver's volume or the computer's input level down.</li>
+  <li><b>Too quiet:</b> the waterfall is black even on loud signals. Turn it up.</li>
+  <li>Turn off any noise reduction, "enhancements" or automatic gain on the computer's input. They smear digital signals.</li>
+</ul>
+
+<h2>5. Flamp and the pumpkin</h2>
+<div class="panel">
+  <div class="seg">
+    <h3>Flamp (the Spooky Wire)</h3>
+    <p>Start Fldigi first, then Flamp. Flamp listens through Fldigi on its own. On the <b>Receive</b> tab the file shows up as it arrives, block by block. If some blocks are missing, keep listening; the relays and fills will usually bring them in. When it's complete, select it and click <b>Save</b>.</p>
+  </div>
+  <div class="seg">
+    <h3>The Great Pumpkin</h3>
+    <p>The pumpkin is an MFSK picture. Fldigi pops open a picture window on its own and paints the image line by line. That takes a few minutes, so don't touch the waterfall while it's painting. When it's done, <b>save the picture</b> before you close that window. You'll need it to <a href="./">open the Crypt</a>.</p>
+    <p style="margin-top:8px">No picture window? Look under <b>Configure &rarr; Modems &rarr; MFSK</b> and make sure picture receive isn't turned off.</p>
+  </div>
+</div>
+
+<h2>Practice before Friday</h2>
+<p>The BDN Net meets every Friday on 7.121 MHz at 9:00 PM Eastern (check-ins 8:45). Try your setup there first, and bring questions to the Monday Ham Radio Hub Zoom call or the Spooky Net announcement thread.</p>
+
+<footer>
+  <p>An amateur radio event of the Digital Ham Workshop and the BDN (Bulletin Distribution) Net.</p>
+  <p><a href="./">Spooky Net 2026</a> · <a href="../">All DHW Special Nets</a></p>
+</footer>
+
+</main>
+</body>
+</html>

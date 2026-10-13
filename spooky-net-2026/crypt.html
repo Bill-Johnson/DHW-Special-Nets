@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Crypt · Spooky Net 2026</title>
+<meta name="description" content="Spooky Net 2026: speak the Great Pumpkin's word and take home your certificate.">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="spooky.css">
+<style>
+  .crypt .field input{flex:none;}
+  #certwrap{display:none;margin-top:18px;}
+  #certimg{display:block;width:100%;height:auto;border:1px solid var(--green);border-radius:10px;}
+</style>
+</head>
+<body>
+<main>
+
+<a class="back" href="./">&larr; Spooky Net 2026</a>
+<header style="margin-top:22px">
+  <div class="eyebrow">Spooky Net 2026 · Trick or Traffic</div>
+  <h1 class="small">The <span>Crypt</span></h1>
+</header>
+
+<p style="margin-top:8px">You stayed until the Great Pumpkin rose. Now say your call, speak its word, and your certificate is yours.</p>
+
+<div class="panel crypt" style="margin-top:24px">
+  <form id="cryptform" autocomplete="off">
+    <div class="grid2" style="width:100%">
+      <div class="field">
+        <label for="call">Your call</label>
+        <input id="call" class="up" type="text" maxlength="16" placeholder="KC9MTP" spellcheck="false" autocapitalize="characters" required>
+      </div>
+      <div class="field">
+        <label for="pw">The Great Pumpkin's word</label>
+        <input id="pw" class="up" type="text" placeholder="THE WORD" spellcheck="false" autocapitalize="characters">
+      </div>
+    </div>
+    <button type="submit">Open</button>
+  </form>
+  <p class="note" style="margin-top:10px">No license? Put your name or SWL ID in the call box. It goes on the certificate exactly as you type it.</p>
+  <div id="cryptmsg" role="status" aria-live="polite"></div>
+  <div id="certwrap">
+    <img id="certimg" alt="Your Spooky Net 2026 Certificate of Survival">
+    <div class="btns">
+      <a id="dl" class="btn" download>Download certificate</a>
+      <a class="btn ghost" href="scorecard.html">Turn in your scorecard</a>
+    </div>
+    <p class="note" style="margin-top:10px">On a phone, press and hold the picture to save it. It prints on letter paper, landscape.</p>
+  </div>
+</div>
+
+<h2>Can't find the word?</h2>
+<div class="panel">
+  <div class="seg">
+    <ol>
+      <li>Open your saved pumpkin picture in any image viewer or editor, like GIMP, Paint, Photos or Preview.</li>
+      <li>Zoom in and look closely at the pumpkin.</li>
+      <li>Still can't see it? Turn the <b>brightness down</b> and the <b>contrast up</b>. Some things only show in the dark. Or lean back from the screen and squint.</li>
+      <li>Capital letters and spaces don't matter.</li>
+    </ol>
+    <p style="margin-top:10px">Missed the picture? Ask someone who copied it to relay it to you on the air. That's what nets are for.</p>
+  </div>
+</div>
+
+<footer>
+  <p>An amateur radio event of the Digital Ham Workshop and the BDN (Bulletin Distribution) Net. Your call stays in your browser. Nothing you type here is sent anywhere.</p>
+  <p><a href="./">Spooky Net 2026</a> · <a href="../">All DHW Special Nets</a></p>
+</footer>
+
+</main>
+
+<script>
+/* The Crypt: AES-256-GCM, key from PBKDF2-SHA256 (100k), same file layout as the
+   FOXLOG tools: salt(16) | iv(12) | ciphertext+tag. Sealed with seal_crypt.py.
+   The password is normalized: letters and digits only, upper case.
+   crypt.enc holds the certificate art (make_crypt_cert.py); the call is drawn
+   into its blank band here. CALL_* mirror make_crypt_cert.py.                  */
+(function(){
+  var CALL_Y=1335, CALL_MAX_W=1700, CALL_MAX_H=150;
+  var form=document.getElementById('cryptform'), pw=document.getElementById('pw'), callIn=document.getElementById('call'),
+      msg=document.getElementById('cryptmsg'), wrap=document.getElementById('certwrap'),
+      img=document.getElementById('certimg'), dl=document.getElementById('dl'), lastUrl=null;
+  function say(t,cls){msg.textContent=t;msg.className=cls||'';}
+  function norm(s){return s.toUpperCase().replace(/[^A-Z0-9]/g,'');}
+  try{ callIn.value=localStorage.getItem('spooky26.call')||''; }catch(_){}
+
+  function stamp(art,call){
+    var c=document.createElement('canvas'); c.width=art.naturalWidth; c.height=art.naturalHeight;
+    var g=c.getContext('2d'); g.drawImage(art,0,0);
+    var px=CALL_MAX_H, fam='"DejaVu Sans Mono",ui-monospace,Menlo,Consolas,"Liberation Mono",monospace';
+    do{ g.font='800 '+px+'px '+fam; px-=4; }while(g.measureText(call).width>CALL_MAX_W&&px>40);
+    g.textAlign='center'; g.textBaseline='middle';
+    g.shadowColor='rgba(255,122,26,.55)'; g.shadowBlur=36;
+    g.fillStyle='#ff7a1a'; g.fillText(call,c.width/2,CALL_Y);
+    g.shadowBlur=0; g.fillText(call,c.width/2,CALL_Y);
+    return c;
+  }
+
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var call=callIn.value.trim().toUpperCase().replace(/\s+/g,' '), word=norm(pw.value);
+    if(!call){say('The spirits need your call first.','bad');callIn.focus();return;}
+    if(!word){say('Say the word.','bad');pw.focus();return;}
+    if(!(window.crypto&&crypto.subtle)){say('This browser cannot open the Crypt. Try a current Firefox, Chrome, Edge or Safari.','bad');return;}
+    try{ localStorage.setItem('spooky26.call',call); }catch(_){}
+    say('The lid creaks...');
+    var buf;
+    try{
+      var r=await fetch('crypt.enc',{cache:'no-store'});
+      if(!r.ok) throw 0;
+      buf=new Uint8Array(await r.arrayBuffer());
+    }catch(_){say('The Crypt is still sealed. Come back after the net on Friday night.','bad');return;}
+    var plain;
+    try{
+      var salt=buf.slice(0,16), iv=buf.slice(16,28), ct=buf.slice(28);
+      var base=await crypto.subtle.importKey('raw',new TextEncoder().encode(word),'PBKDF2',false,['deriveKey']);
+      var key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:100000,hash:'SHA-256'},
+              base,{name:'AES-GCM',length:256},false,['decrypt']);
+      plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:iv},key,ct);
+    }catch(_){
+      wrap.style.display='none';
+      say('Wrong word. The spirits laugh at you. Look closer at the pumpkin.','bad');return;
+    }
+    var art=new Image(), src=URL.createObjectURL(new Blob([plain],{type:'image/png'}));
+    art.onload=function(){
+      URL.revokeObjectURL(src);
+      stamp(art,call).toBlob(function(b){
+        if(lastUrl) URL.revokeObjectURL(lastUrl);
+        lastUrl=URL.createObjectURL(b);
+        img.src=lastUrl; dl.href=lastUrl;
+        dl.download='SpookyNet2026_'+call.replace(/[^A-Z0-9]+/g,'_')+'.png';
+        wrap.style.display='block';
+        say('You survived, '+call+'. Here is your treat.','good');
+      },'image/png');
+    };
+    art.onerror=function(){say('The Crypt opened, but the certificate crumbled. Tell NCS.','bad');};
+    art.src=src;
+  });
+})();
+</script>
+</body>
+</html>

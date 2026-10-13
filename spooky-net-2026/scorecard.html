@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scorecard · Spooky Net 2026</title>
+<meta name="description" content="Spooky Net 2026 scorecard: Ghost Whisperer words and Spooky Wire errors, for points.">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="spooky.css">
+<style>
+  .ghosts{width:100%;border-collapse:collapse;}
+  .ghosts th{font-size:11px;padding:8px 6px;}
+  .ghosts td{padding:6px;border-top:1px solid var(--line);}
+  .ghosts input{font-family:var(--mono);font-size:15px;color:var(--text);background:#050c16;border:1px solid var(--line);
+    border-radius:7px;padding:8px;width:100%;min-width:0;text-transform:uppercase;}
+  .ghosts input:focus-visible{outline:2px solid var(--spectre);outline-offset:1px;}
+  .ghosts td:first-child input{color:var(--spectre);}
+  .scroll{overflow-x:auto;scrollbar-color:var(--line) transparent;}
+  .ghosts{min-width:520px;}
+  pre#preview{background:#050c16;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:14px;
+    color:var(--amber);font-family:var(--mono);font-size:13.5px;white-space:pre-wrap;overflow-wrap:anywhere;}
+  #sendmsg{font-family:var(--mono);font-size:14px;margin-top:12px;color:var(--muted);min-height:1.4em;}
+  #sendmsg.good{color:var(--green);} #sendmsg.bad{color:var(--coral);}
+</style>
+</head>
+<body>
+<main>
+
+<a class="back" href="./">&larr; Spooky Net 2026</a>
+<header style="margin-top:22px">
+  <div class="eyebrow">Spooky Net 2026 · Trick or Traffic</div>
+  <h1 class="small">The <span>Scorecard</span></h1>
+</header>
+
+<p style="margin-top:8px">Totally optional. Turn in what you copied and you're in the running for points. Awards are given out the following week. Receive-only listeners count too.</p>
+
+<form id="card" autocomplete="off">
+
+<h2>You</h2>
+<div class="grid2">
+  <div class="field"><label for="call">Call (or SWL name) *</label><input id="call" name="call" class="up" maxlength="16" required spellcheck="false" autocapitalize="characters"></div>
+  <div class="field"><label for="name">Name</label><input id="name" name="name" maxlength="40"></div>
+  <div class="field"><label for="where">State / grid</label><input id="where" name="where" class="up" maxlength="20" spellcheck="false"></div>
+</div>
+
+<h2>Ghost Whisperer</h2>
+<p>Each ghost station sent a word three times at 50, 10, 5 and 1 W. Put the station's call on a row, then every word you copied at each power level. Leave a box blank if that one faded out on you.</p>
+<div class="panel scroll" style="margin-top:14px;padding:6px">
+  <table class="ghosts">
+    <thead><tr><th>Ghost station</th><th>50 W</th><th>10 W</th><th>5 W</th><th>1 W</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+<div class="btns"><button type="button" class="btn ghost" id="addrow">+ Another ghost</button></div>
+
+<h2>Spooky Wire errors</h2>
+<div class="field">
+  <label for="errors">One error per line</label>
+  <textarea id="errors" name="errors" placeholder="e.g. NET FREQ GIVEN AS 7.131"></textarea>
+</div>
+
+<h2>Anything else</h2>
+<div class="field">
+  <label for="notes">Notes for NCS (optional)</label>
+  <textarea id="notes" name="notes" style="min-height:80px" placeholder="Rig, antenna, how the copy went, your costume..."></textarea>
+</div>
+
+<h2>Turn it in</h2>
+<p>This opens an email with your scorecard already filled in. Just hit send. <b>Turn it in by Wednesday 4 November.</b></p>
+<div class="btns">
+  <button type="submit" class="btn" id="send">Email my scorecard</button>
+  <button type="button" class="btn ghost" id="copy">Copy as text</button>
+</div>
+<div id="sendmsg" role="status" aria-live="polite"></div>
+<details style="margin-top:14px"><summary class="lbl" style="cursor:pointer">What gets sent</summary><pre id="preview"></pre></details>
+
+</form>
+
+<footer>
+  <p>An amateur radio event of the Digital Ham Workshop and the BDN (Bulletin Distribution) Net. Your scorecard is saved only in this browser until you send it.</p>
+  <p><a href="./">Spooky Net 2026</a> · <a href="crypt.html">The Crypt</a> · <a href="../">All DHW Special Nets</a></p>
+</footer>
+
+</main>
+
+<script>
+(function(){
+  var SUBMIT_TO = '';            /* scorecard inbox; set before net night */
+  var F={}; ["call","name","where","errors","notes"].forEach(function(k){F[k]=document.getElementById(k);});
+  var LEVELS=['50W','10W','5W','1W'], KEY='spooky26.scorecard';
+  var form=document.getElementById('card'), rows=document.getElementById('rows'),
+      msg=document.getElementById('sendmsg'), pre=document.getElementById('preview');
+  function say(t,c){msg.textContent=t;msg.className=c||'';}
+  function addRow(v){
+    v=v||[];
+    var tr=document.createElement('tr');
+    ['Station'].concat(LEVELS).forEach(function(l,i){
+      var td=document.createElement('td'), inp=document.createElement('input');
+      inp.maxLength=i?20:12; inp.spellcheck=false; inp.setAttribute('aria-label',i?'Word at '+l:'Ghost station call');
+      inp.value=v[i]||''; td.appendChild(inp); tr.appendChild(td);
+    });
+    rows.appendChild(tr);
+  }
+  function grab(){
+    var g=[].map.call(rows.rows,function(tr){return [].map.call(tr.querySelectorAll('input'),function(i){return i.value.trim().toUpperCase();});});
+    return {call:F.call.value.trim().toUpperCase(), name:F.name.value.trim(), where:F.where.value.trim().toUpperCase(),
+            ghosts:g, errors:F.errors.value, notes:F.notes.value};
+  }
+  function text(d){
+    var L=['SPOOKY NET 2026 SCORECARD','CALL: '+d.call+(d.name?'   NAME: '+d.name:'')+(d.where?'   QTH: '+d.where:''),'',
+           'GHOST WHISPERER  (station: 50W / 10W / 5W / 1W)'];
+    var any=false;
+    d.ghosts.forEach(function(r){
+      if(!r.join('')) return; any=true;
+      L.push((r[0]||'?')+': '+r.slice(1).map(function(w){return w||'-';}).join(' / '));
+    });
+    if(!any) L.push('(none)');
+    L.push('','SPOOKY WIRE ERRORS');
+    var errs=d.errors.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    if(!errs.length) L.push('(none)');
+    errs.forEach(function(e,i){L.push((i+1)+'. '+e);});
+    if(d.notes.trim()) L.push('','NOTES',d.notes.trim());
+    return L.join('\n');
+  }
+  function save(){ var d=grab(); pre.textContent=text(d); try{localStorage.setItem(KEY,JSON.stringify(d));}catch(_){} }
+
+  var saved=null; try{saved=JSON.parse(localStorage.getItem(KEY)||'null');}catch(_){}
+  if(saved){
+    F.call.value=saved.call||''; F.name.value=saved.name||''; F.where.value=saved.where||'';
+    F.errors.value=saved.errors||''; F.notes.value=saved.notes||'';
+    (saved.ghosts||[]).forEach(addRow);
+  }else{ try{F.call.value=localStorage.getItem('spooky26.call')||'';}catch(_){} }
+  while(rows.rows.length<4) addRow();
+  save();
+
+  form.addEventListener('input',save);
+  document.getElementById('addrow').addEventListener('click',function(){addRow();rows.rows[rows.rows.length-1].querySelector('input').focus();save();});
+  document.getElementById('copy').addEventListener('click',async function(){
+    save();
+    try{await navigator.clipboard.writeText(pre.textContent);say('Copied. Paste it into an email or a reply to the net post.','good');}
+    catch(_){say('Could not copy. Open "What gets sent" below and copy it by hand.','bad');}
+  });
+  form.addEventListener('submit',function(e){
+    e.preventDefault(); save();
+    var d=grab();
+    if(!d.call){say('Your call first, so the points land on the right station.','bad');F.call.focus();return;}
+    try{localStorage.setItem('spooky26.call',d.call);}catch(_){}
+    if(!SUBMIT_TO){say('The scorecard inbox opens after the net. Use "Copy as text" for now.','bad');return;}
+    location.href='mailto:'+SUBMIT_TO+'?subject='+encodeURIComponent('Spooky Net 2026 scorecard: '+d.call)+
+                  '&body='+encodeURIComponent(pre.textContent);
+    say('Your email app should open with the scorecard filled in. If nothing happened, use "Copy as text" and email it to '+SUBMIT_TO+'.','good');
+  });
+})();
+</script>
+</body>
+</html>
