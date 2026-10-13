@@ -21,11 +21,20 @@
 <h2>1. Get the software</h2>
 <p>Download <b>Fldigi</b> and <b>Flamp</b> from W1HKJ: <a href="http://www.w1hkj.com/">w1hkj.com</a>. Both are free and run on Windows, Mac, Linux and Raspberry Pi. On Linux they're usually in your package manager too.</p>
 
-<h2>2. Pick your way in</h2>
+<h2>2. Where Fldigi listens</h2>
+<p>Whatever way you choose below, you'll tell Fldigi where to listen in the same place:</p>
+<p style="margin-top:10px"><b>Configure &rarr; Configuration &rarr; Soundcard &rarr; Devices &rarr; Capture</b></p>
+<p style="margin-top:10px">Pick the device your audio is coming in on, click <b>Save</b>, then <b>Close</b>.</p>
+<figure style="margin-top:16px">
+  <img src="assets/fldigi_capture_device.png" width="1032" height="390" style="display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:10px" alt="Fldigi configuration window, Soundcard then Devices selected. The PortAudio Capture list is open, showing the computer's speakers under JACK Audio Connection Kit devices.">
+  <figcaption class="note" style="margin-top:8px">Copying a WebSDR on Linux: the Capture list, opened on the computer's own speakers. Fldigi hears whatever the speakers are playing.</figcaption>
+</figure>
+
+<h2>3. Pick your way in</h2>
 <div class="panel">
   <div class="seg">
     <h3>A radio with a USB port</h3>
-    <p>Many newer rigs have a sound card built in. Connect the USB cable, and the radio shows up on the computer as a sound device with a name like <code>USB Audio CODEC</code>. In Fldigi, open <b>Configure &rarr; Sound Card &rarr; Audio &rarr; Devices</b> and choose it as the <b>Capture</b> device.</p>
+    <p>Many newer rigs have a sound card built in. Connect the USB cable, and the radio shows up on the computer as a sound device with a name like <code>USB Audio CODEC</code>. Choose it as the <b>Capture</b> device in Fldigi (see above).</p>
   </div>
   <div class="seg">
     <h3>A cable from any receiver</h3>
@@ -37,7 +46,7 @@
     <ul style="margin-top:8px">
       <li><b>Windows:</b> VB-Audio Virtual Cable. Set the SDR's output to <code>CABLE Input</code> and Fldigi's capture to <code>CABLE Output</code>.</li>
       <li><b>Mac:</b> BlackHole. Use it as the SDR's output and Fldigi's input.</li>
-      <li><b>Linux:</b> PipeWire or PulseAudio. In <code>pavucontrol</code>, set Fldigi's recording source to the <code>Monitor of</code> your speakers.</li>
+      <li><b>Linux:</b> often no cable needed. In Fldigi's Capture list, pick your speakers (under <code>JACK Audio Connection Kit devices</code> on PipeWire systems, as in the picture above). Or, in <code>pavucontrol</code>, set Fldigi's recording source to the <code>Monitor of</code> your speakers.</li>
     </ul>
     <p style="margin-top:8px">A cheap RTL-SDR dongle needs direct sampling mode or an upconverter to hear 40 meters.</p>
   </div>
@@ -51,7 +60,7 @@
   </div>
 </div>
 
-<h2>3. Set up Fldigi</h2>
+<h2>4. Set up Fldigi</h2>
 <ol>
   <li>Tune to <b>7.121 MHz USB</b>. (On a WebSDR or SDR, set the mode to USB as well.)</li>
   <li>Choose the mode: <b>Op Mode &rarr; MFSK &rarr; MFSK-32</b>.</li>
@@ -60,7 +69,7 @@
   <li>Leave <b>TxID off</b> if you're also a transmitting station.</li>
 </ol>
 
-<h2>4. Set the level</h2>
+<h2>5. Set the level</h2>
 <p>Too much audio is just as bad as too little.</p>
 <ul>
   <li><b>Good:</b> the waterfall background is dark blue with a few speckles, and signals show up as bright tracks.</li>
@@ -69,7 +78,7 @@
   <li>Turn off any noise reduction, "enhancements" or automatic gain on the computer's input. They smear digital signals.</li>
 </ul>
 
-<h2>5. Flamp and the pumpkin</h2>
+<h2>6. Flamp and the pumpkin</h2>
 <div class="panel">
   <div class="seg">
     <h3>Flamp (the Spooky Wire)</h3>
