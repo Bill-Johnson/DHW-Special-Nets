@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spooky Net 2026 · Trick or Traffic</title>
+<meta name="description" content="A Halloween special net on 40 meters. Fri 30 Oct 2026, 9:00 PM ET / 6:00 PM PT / 0100Z Sat. 7.121 MHz USB, MFSK32. Receive-only welcome.">
+<meta property="og:title" content="Spooky Net 2026 · Trick or Traffic">
+<meta property="og:description" content="Halloween special net. Fri 30 Oct, 9 PM ET / 6 PM PT / 0100Z. 7.121 USB, MFSK32 @ 1000 Hz. No license needed to copy.">
+<meta property="og:image" content="https://bill-johnson.github.io/DHW-Special-Nets/spooky-net-2026/assets/spooky_net_2026.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{
+    --ground:#060a12; --panel:#0d1826; --line:#22405f; --text:#eaf1f9; --muted:#93a7bd;
+    --amber:#ffb020; --green:#46e08a; --coral:#ff6a45;
+    --pumpkin:#ff7a1a; --spectre:#b9a6ff; --moon:#f3ecd2;
+    --mono:"DejaVu Sans Mono",ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{background:var(--ground);}
+  body{font-family:var(--sans);color:var(--text);background:
+      radial-gradient(90% 50% at 70% -5%, #2a1634 0%, rgba(6,10,18,0) 70%), var(--ground);
+    line-height:1.55;font-size:17px;}
+  main{max-width:820px;margin:0 auto;padding:40px 16px 80px;}
+  a{color:var(--spectre);}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--moon);
+    display:flex;align-items:center;gap:12px;}
+  .eyebrow::after{content:"";flex:1;height:1px;background:linear-gradient(to right,rgba(243,236,210,.5),transparent);}
+  h1{font-weight:900;text-transform:uppercase;line-height:.9;letter-spacing:-.02em;font-size:clamp(52px,13vw,104px);margin:18px 0 10px;}
+  h1 span{color:var(--pumpkin);text-shadow:0 0 28px rgba(255,122,26,.45);}
+  .sub{font-family:var(--mono);font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--spectre);
+    font-size:clamp(17px,4vw,24px);display:flex;flex-wrap:wrap;align-items:center;gap:14px;}
+  .date{background:var(--pumpkin);color:#1a0a00;padding:4px 12px;border-radius:7px;letter-spacing:.06em;}
+  .hero img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:14px;margin-top:28px;}
+  h2{font-family:var(--mono);font-size:14px;letter-spacing:.22em;text-transform:uppercase;color:var(--pumpkin);
+    margin:52px 0 16px;display:flex;align-items:center;gap:12px;}
+  h2::after{content:"";flex:1;height:1px;background:var(--line);}
+  p+p{margin-top:12px;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;}
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);}
+  th,td{text-align:left;padding:11px 14px;border-top:1px solid var(--line);}
+  tr:first-child th,tr:first-child td{border-top:0;}
+  th{color:var(--muted);font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;}
+  td.t{color:var(--amber);font-weight:700;font-size:20px;white-space:nowrap;}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .kv div{background:var(--panel);padding:12px 14px;display:flex;flex-direction:column;gap:2px;}
+  .kv .k{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+  .kv .v{font-family:var(--mono);font-weight:700;}
+  .kv .v b{color:var(--amber);} .kv .v i{color:var(--green);font-style:normal;}
+  .seg{padding:18px 20px;border-top:1px solid var(--line);}
+  .seg:first-child{border-top:0;}
+  .seg h3{font-family:var(--mono);font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--spectre);margin-bottom:6px;}
+  code,pre{font-family:var(--mono);}
+  code{color:var(--amber);font-size:.92em;overflow-wrap:anywhere;}
+  pre.box{background:#050c16;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:10px;
+    color:var(--amber);font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere;}
+  ol,ul{padding-left:22px;} li+li{margin-top:6px;}
+  .hook{border-left:5px solid var(--amber);padding-left:16px;font-weight:800;font-size:22px;line-height:1.25;}
+  .led{font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);
+    display:flex;align-items:center;gap:10px;margin-top:8px;}
+  .led::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 10px rgba(70,224,138,.9);}
+  /* the crypt */
+  .crypt{padding:22px 20px;}
+  .crypt form{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+  .crypt input{flex:1 1 220px;min-width:0;font-family:var(--mono);font-size:18px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--text);background:#050c16;border:1px solid var(--line);border-radius:9px;padding:11px 14px;}
+  .crypt button{font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase;
+    color:#1a0a00;background:var(--pumpkin);border:0;border-radius:9px;padding:11px 20px;cursor:pointer;}
+  .crypt input:focus-visible,.crypt button:focus-visible{outline:2px solid var(--spectre);outline-offset:2px;}
+  #cryptmsg{font-family:var(--mono);font-size:14px;margin-top:12px;color:var(--muted);min-height:1.4em;}
+  #cryptmsg.bad{color:var(--coral);} #cryptmsg.good{color:var(--green);}
+  #treat{display:none;margin-top:16px;background:#050c16;border:1px solid var(--green);border-radius:10px;padding:16px;
+    font-family:var(--mono);font-size:14px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text);}
+  footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  footer p+p{margin-top:8px;}
+</style>
+</head>
+<body>
+<main>
+
+<header class="hero">
+  <div class="eyebrow">Digital Ham Workshop · BDN Net Special</div>
+  <h1><span>Spooky</span> Net</h1>
+  <div class="sub">Trick or Traffic <span class="date">FRI 30 OCT 2026</span></div>
+  <img src="assets/spooky_net_2026.png" width="1200" height="675" alt="Spooky Net 2026 promo card: a ghost with an antenna beside a dead tree under a full moon.">
+</header>
+
+<h2>When</h2>
+<div class="panel">
+  <table>
+    <tr><th>Zone</th><th>Check-ins open</th><th>Net starts</th></tr>
+    <tr><th>Eastern (EDT)</th><td class="t">8:45 PM</td><td class="t">9:00 PM</td></tr>
+    <tr><th>Pacific (PDT)</th><td class="t">5:45 PM</td><td class="t">6:00 PM</td></tr>
+    <tr><th>UTC · Sat 31 Oct</th><td class="t">0045Z</td><td class="t">0100Z</td></tr>
+  </table>
+</div>
+<p style="margin-top:12px">Friday night, 30 October. In UTC that's already Saturday. Plan on about 75 minutes.</p>
+
+<h2>Where &amp; how</h2>
+<div class="kv">
+  <div><span class="k">Frequency</span><span class="v"><b>7.121</b> MHz USB</span></div>
+  <div><span class="k">Mode</span><span class="v">MFSK32 @ 1000 Hz</span></div>
+  <div><span class="k">Software</span><span class="v">Fldigi + Flamp</span></div>
+  <div><span class="k">Fldigi IDs</span><span class="v">RxID <i>ON</i> · TxID OFF</span></div>
+</div>
+
+<h2>No license? No transmitter?</h2>
+<p class="hook">Come anyway. Copy the pumpkin.</p>
+<div class="led">Receive-only welcome</div>
+<p style="margin-top:16px">Everything on this net can be copied with a receiver, a computer, and free software. Here's how to follow along:</p>
+<ol style="margin-top:10px">
+  <li>Install <b>Fldigi</b> and <b>Flamp</b> (free, from W1HKJ). Both run on Windows, Mac, Linux and Raspberry Pi.</li>
+  <li>Connect your receiver's audio to the computer. A cable to the sound card works, and so does a receiver with a built-in USB sound card.</li>
+  <li>Tune to <b>7.121 MHz USB</b>. In Fldigi, choose <b>MFSK32</b>, then click the waterfall at <b>1000 Hz</b>.</li>
+  <li>Turn <b>RxID on</b> (the RxID button in Fldigi). Fldigi will follow the net if it changes modes.</li>
+  <li>Open Flamp. The bulletin file builds itself block by block. The pumpkin picture opens in Fldigi's picture window. Save it.</li>
+</ol>
+<p>Want to try it before Friday? The BDN Net meets on the same frequency every Friday at the same time.</p>
+
+<h2>On the menu</h2>
+<div class="panel">
+  <div class="seg">
+    <h3>Costume check-in</h3>
+    <p>Optional, and fun to watch scroll up the screen. Check in like this:</p>
+    <pre class="box">CALL / CALL / NAME / COSTUME / STATE / CALL   + TRICK or TREAT
+KC9MTP KC9MTP BILL FRANKENSTEIN IN KC9MTP TREAT</pre>
+    <p style="margin-top:10px">If costumes aren't your thing, a normal check-in is fine.</p>
+  </div>
+  <div class="seg">
+    <h3>Haunted Bulletin</h3>
+    <p>Tonight's bulletin goes out by Flamp like any Friday, and the relays carry it across the map. But tricks are hiding in it. Copy it, read it, and find them. Send your list to NCS by traffic, or reply to the announcement post. The answers come out the following Friday.</p>
+  </div>
+  <div class="seg">
+    <h3>Trick or Traffic</h3>
+    <p>Say <b>TRICK</b> or <b>TREAT</b> at check-in. A treat is a small file sent just to you. A trick is a task card you have to finish before the net closes. Gamble wisely.</p>
+  </div>
+  <div class="seg">
+    <h3>Ghost Whisperer</h3>
+    <p>"Summoning spirits from the ether." The volunteer stations are lined up ahead of time. Each one steps down from <b>100 W to 25, 5, and 1 W</b>, sending a short beacon at each step. Everyone else notes the lowest step they could still decode. The station heard at the lowest power over the longest distance takes the title.</p>
+  </div>
+  <div class="seg">
+    <h3>Pumpkin Cert</h3>
+    <p>Stay to the end, long enough to see the Great Pumpkin rise. The last thing sent tonight is a small MFSK picture, and it's your certificate. Everyone who copies it earns it, receive-only included.</p>
+  </div>
+</div>
+
+<h2>The Crypt</h2>
+<div class="panel crypt">
+  <p>Something is locked in here. A trick, then a treat.</p>
+  <p>The way in arrives on the air on Friday night. Find out how to get it out in <b>How to open the Crypt</b> below. Until then, the Crypt stays sealed.</p>
+  <form id="cryptform" autocomplete="off">
+    <label for="pw" style="position:absolute;left:-9999px">Password</label>
+    <input id="pw" name="pw" type="text" placeholder="THE WORD" spellcheck="false" autocapitalize="characters">
+    <button type="submit">Open</button>
+  </form>
+  <div id="cryptmsg" role="status" aria-live="polite"></div>
+  <div id="treat"></div>
+</div>
+
+<h2>How to open the Crypt</h2>
+<div class="panel">
+  <div class="seg">
+    <h3>The trick</h3>
+    <p>The word that opens the Crypt is <b>in the Great Pumpkin</b>, the picture sent at the end of the net. It's written right there in plain sight. But it isn't easy to see.</p>
+  </div>
+  <div class="seg">
+    <h3>Getting it out</h3>
+    <ol>
+      <li>Copy the pumpkin picture in Fldigi and <b>save it</b>.</li>
+      <li>Open it in any image viewer or editor, like GIMP, Paint, Photos or Preview.</li>
+      <li>Zoom in and look closely at the pumpkin.</li>
+      <li>If you can't find it, raise the <b>brightness and contrast</b>. Hidden things come out in the light.</li>
+      <li>Type the word into the Crypt. Capital letters don't matter.</li>
+    </ol>
+    <p style="margin-top:10px">Missed the picture? Ask someone who copied it to relay it to you on the air. That's what nets are for.</p>
+  </div>
+</div>
+
+<h2>After the net</h2>
+<p>The answer key for the Haunted Bulletin, the Ghost Whisperer results, the awards, and a full-size printable certificate will be posted here the following week.</p>
+
+<footer>
+  <p>An amateur radio event of the Digital Ham Workshop and the BDN (Bulletin Distribution) Net. Everything sent on the air is plain language under FCC Part 97. The Crypt lives only on this website.</p>
+  <p><a href="../">All DHW Special Nets</a></p>
+</footer>
+
+</main>
+
+<script>
+/* The Crypt: AES-256-GCM, key from PBKDF2-SHA256 (100k), same file layout as the
+   FOXLOG tools: salt(16) | iv(12) | ciphertext+tag. Sealed with seal_crypt.py.
+   The password is normalized: letters and digits only, upper case.             */
+(function(){
+  var form=document.getElementById('cryptform'), pw=document.getElementById('pw'),
+      msg=document.getElementById('cryptmsg'), out=document.getElementById('treat');
+  function say(t,cls){msg.textContent=t;msg.className=cls||'';}
+  function norm(s){return s.toUpperCase().replace(/[^A-Z0-9]/g,'');}
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var word=norm(pw.value);
+    if(!word){say('Say the word.','bad');return;}
+    if(!(window.crypto&&crypto.subtle)){say('This browser cannot open the Crypt. Try a current Firefox, Chrome, Edge or Safari.','bad');return;}
+    say('The lid creaks...');
+    var buf;
+    try{
+      var r=await fetch('crypt.enc',{cache:'no-store'});
+      if(!r.ok) throw 0;
+      buf=new Uint8Array(await r.arrayBuffer());
+    }catch(_){say('The Crypt is still sealed. Come back after the net on Friday night.','bad');return;}
+    try{
+      var salt=buf.slice(0,16), iv=buf.slice(16,28), ct=buf.slice(28);
+      var base=await crypto.subtle.importKey('raw',new TextEncoder().encode(word),'PBKDF2',false,['deriveKey']);
+      var key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:100000,hash:'SHA-256'},
+              base,{name:'AES-GCM',length:256},false,['decrypt']);
+      var plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:iv},key,ct);
+      out.textContent=new TextDecoder().decode(plain);
+      out.style.display='block';
+      say('You survived. Here is your treat.','good');
+    }catch(_){
+      out.style.display='none';
+      say('Wrong word. The spirits laugh at you. Look closer at the pumpkin.','bad');
+    }
+  });
+})();
+</script>
+</body>
+</html>

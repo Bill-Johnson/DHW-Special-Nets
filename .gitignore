@@ -1,0 +1,4 @@
+# This repo is PUBLIC. Plaintext bulletins, answer keys and passwords never go here.
+*.txt
+*.md.private
+private/
