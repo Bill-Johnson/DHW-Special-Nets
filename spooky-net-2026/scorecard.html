@@ -66,11 +66,12 @@
 </div>
 
 <h2>Turn it in</h2>
-<p>This opens an email with your scorecard already filled in. Just hit send. <b>Turn it in by Wednesday 4 November.</b></p>
+<p>One click sends it to the net. No email needed. <b>Turn it in by Wednesday 4 November.</b> Send again if you find more; the latest one counts.</p>
 <div class="btns">
-  <button type="submit" class="btn" id="send">Email my scorecard</button>
+  <button type="submit" class="btn" id="send">Send my scorecard</button>
   <button type="button" class="btn ghost" id="copy">Copy as text</button>
 </div>
+<input type="text" id="gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
 <div id="sendmsg" role="status" aria-live="polite"></div>
 <details style="margin-top:14px"><summary class="lbl" style="cursor:pointer">What gets sent</summary><pre id="preview"></pre></details>
 
@@ -85,7 +86,9 @@
 
 <script>
 (function(){
-  var SUBMIT_TO = '';            /* scorecard inbox; set before net night */
+  /* Formspree form endpoint (https://formspree.io/f/xxxxxxxx). Entries are emailed to the
+     DHW Proton inbox set in the Formspree account; no address appears on this page. */
+  var FORM_ENDPOINT = 'https://formspree.io/f/mkjoqkav';
   var F={}; ["call","name","where","errors","notes"].forEach(function(k){F[k]=document.getElementById(k);});
   var LEVELS=['50W','10W','5W','1W'], KEY='spooky26.scorecard';
   var form=document.getElementById('card'), rows=document.getElementById('rows'),
@@ -145,10 +148,20 @@
     var d=grab();
     if(!d.call){say('Your call first, so the points land on the right station.','bad');F.call.focus();return;}
     try{localStorage.setItem('spooky26.call',d.call);}catch(_){}
-    if(!SUBMIT_TO){say('The scorecard inbox opens after the net. Use "Copy as text" for now.','bad');return;}
-    location.href='mailto:'+SUBMIT_TO+'?subject='+encodeURIComponent('Spooky Net 2026 scorecard: '+d.call)+
-                  '&body='+encodeURIComponent(pre.textContent);
-    say('Your email app should open with the scorecard filled in. If nothing happened, use "Copy as text" and email it to '+SUBMIT_TO+'.','good');
+    if(!FORM_ENDPOINT){say('The scorecard box opens after the net. Use "Copy as text" for now.','bad');return;}
+    var btn=document.getElementById('send'); btn.disabled=true; say('Sending...');
+    var ghosts=d.ghosts.filter(function(r){return r.join('');})
+                       .map(function(r){return (r[0]||'?')+': '+r.slice(1).map(function(w){return w||'-';}).join(' / ');});
+    fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({_subject:'Spooky Net 2026 scorecard: '+d.call, _gotcha:document.getElementById('gotcha').value,
+        call:d.call, name:d.name, qth:d.where, ghost_whisperer:ghosts.join('\n')||'(none)',
+        spooky_wire_errors:d.errors.trim()||'(none)', notes:d.notes.trim(), scorecard:pre.textContent})})
+    .then(function(r){
+      if(!r.ok) throw 0;
+      say('Sent! Thanks, '+d.call+'. Points and awards come out the following week.','good');
+    })
+    .catch(function(){say('That didn\'t go through. Try again in a minute, or use "Copy as text" and send it to NCS.','bad');})
+    .then(function(){btn.disabled=false;});
   });
 })();
 </script>
