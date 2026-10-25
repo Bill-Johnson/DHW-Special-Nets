@@ -21,6 +21,10 @@
     color:var(--amber);font-family:var(--mono);font-size:13.5px;white-space:pre-wrap;overflow-wrap:anywhere;}
   #sendmsg{font-family:var(--mono);font-size:14px;margin-top:12px;color:var(--muted);min-height:1.4em;}
   #sendmsg.good{color:var(--green);} #sendmsg.bad{color:var(--coral);}
+  .optout{display:flex;gap:12px;align-items:flex-start;margin-top:14px;padding:14px 16px;cursor:pointer;}
+  .optout input{width:20px;height:20px;margin-top:2px;flex:none;accent-color:var(--pumpkin);}
+  .optout input:focus-visible{outline:2px solid var(--spectre);outline-offset:2px;}
+  .optout span{font-size:15px;}
 </style>
 </head>
 <body>
@@ -64,6 +68,10 @@
   <label for="notes">Notes for NCS (optional)</label>
   <textarea id="notes" name="notes" style="min-height:80px" placeholder="Rig, antenna, how the copy went, your costume..."></textarea>
 </div>
+<label class="panel optout" for="nolist">
+  <input type="checkbox" id="nolist" name="nolist">
+  <span><b>Leave my call off the tombstone.</b> The top 10 get carved on the tombstone page on this site, calls only. Tick this and you still get your points and a shot at the awards, but your call won't be carved.</span>
+</label>
 
 <h2>Turn it in</h2>
 <p>One click sends it to the net. No email needed. <b>Turn it in by Wednesday 4 November.</b> Send again if you find more; the latest one counts.</p>
@@ -91,6 +99,7 @@
   var FORM_ENDPOINT = 'https://formspree.io/f/mkjoqkav';
   var F={}; ["call","name","where","errors","notes"].forEach(function(k){F[k]=document.getElementById(k);});
   var LEVELS=['50W','10W','5W','1W'], KEY='spooky26.scorecard';
+  var nolist=document.getElementById('nolist');
   var form=document.getElementById('card'), rows=document.getElementById('rows'),
       msg=document.getElementById('sendmsg'), pre=document.getElementById('preview');
   function say(t,c){msg.textContent=t;msg.className=c||'';}
@@ -107,7 +116,7 @@
   function grab(){
     var g=[].map.call(rows.rows,function(tr){return [].map.call(tr.querySelectorAll('input'),function(i){return i.value.trim().toUpperCase();});});
     return {call:F.call.value.trim().toUpperCase(), name:F.name.value.trim(), where:F.where.value.trim().toUpperCase(),
-            ghosts:g, errors:F.errors.value, notes:F.notes.value};
+            ghosts:g, errors:F.errors.value, notes:F.notes.value, nolist:nolist.checked};
   }
   function text(d){
     var L=['SPOOKY NET 2026 SCORECARD','CALL: '+d.call+(d.name?'   NAME: '+d.name:'')+(d.where?'   QTH: '+d.where:''),'',
@@ -123,6 +132,7 @@
     if(!errs.length) L.push('(none)');
     errs.forEach(function(e,i){L.push((i+1)+'. '+e);});
     if(d.notes.trim()) L.push('','NOTES',d.notes.trim());
+    L.push('','TOMBSTONE: '+(d.nolist?'DO NOT LIST MY CALL':'OK to list'));
     return L.join('\n');
   }
   function save(){ var d=grab(); pre.textContent=text(d); try{localStorage.setItem(KEY,JSON.stringify(d));}catch(_){} }
@@ -130,13 +140,13 @@
   var saved=null; try{saved=JSON.parse(localStorage.getItem(KEY)||'null');}catch(_){}
   if(saved){
     F.call.value=saved.call||''; F.name.value=saved.name||''; F.where.value=saved.where||'';
-    F.errors.value=saved.errors||''; F.notes.value=saved.notes||'';
+    F.errors.value=saved.errors||''; F.notes.value=saved.notes||''; nolist.checked=!!saved.nolist;
     (saved.ghosts||[]).forEach(addRow);
   }else{ try{F.call.value=localStorage.getItem('spooky26.call')||'';}catch(_){} }
   while(rows.rows.length<4) addRow();
   save();
 
-  form.addEventListener('input',save);
+  form.addEventListener('input',save); form.addEventListener('change',save);
   document.getElementById('addrow').addEventListener('click',function(){addRow();rows.rows[rows.rows.length-1].querySelector('input').focus();save();});
   document.getElementById('copy').addEventListener('click',async function(){
     save();
@@ -155,7 +165,8 @@
     fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
       body:JSON.stringify({_subject:'Spooky Net 2026 scorecard: '+d.call, _gotcha:document.getElementById('gotcha').value,
         call:d.call, name:d.name, qth:d.where, ghost_whisperer:ghosts.join('\n')||'(none)',
-        spooky_wire_errors:d.errors.trim()||'(none)', notes:d.notes.trim(), scorecard:pre.textContent})})
+        spooky_wire_errors:d.errors.trim()||'(none)', notes:d.notes.trim(),
+        tombstone:d.nolist?'DO NOT LIST':'ok to list', scorecard:pre.textContent})})
     .then(function(r){
       if(!r.ok) throw 0;
       say('Sent! Thanks, '+d.call+'. Points and awards come out the following week.','good');
