@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Candy Bowl · Spooky Net 2026</title>
+<meta name="description" content="Spooky Net 2026: bring your call and your code, reach into the Candy Bowl, and see if you got a trick or a treat.">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="spooky.css">
+<style>
+  .crypt .field input{flex:none;}
+  #cardwrap{display:none;margin-top:18px;}
+  #cardimg{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:10px;}
+  #cardwrap.treat #cardimg{border-color:var(--pumpkin);box-shadow:0 0 28px rgba(255,122,26,.25);}
+  #cardwrap.trick #cardimg{border-color:var(--spectre);box-shadow:0 0 28px rgba(185,166,255,.25);}
+  #verdict{font-weight:900;text-transform:uppercase;letter-spacing:-.01em;font-size:clamp(36px,9vw,60px);line-height:1;margin-bottom:12px;}
+  #cardwrap.treat #verdict{color:var(--pumpkin);text-shadow:0 0 24px rgba(255,122,26,.45);}
+  #cardwrap.trick #verdict{color:var(--spectre);text-shadow:0 0 24px rgba(185,166,255,.45);}
+</style>
+</head>
+<body>
+<main>
+
+<a class="back" href="./">&larr; Spooky Net 2026</a>
+<header style="margin-top:22px">
+  <div class="eyebrow">Spooky Net 2026 · Trick or Traffic</div>
+  <h1 class="small">The Candy <span>Bowl</span></h1>
+</header>
+
+<p style="margin-top:8px">You said TRICK or TREAT at check-in, and NCS read back your call with a code. Reach in and see what you got.</p>
+
+<div class="panel crypt" style="margin-top:24px">
+  <form id="candyform" autocomplete="off">
+    <div class="grid2" style="width:100%">
+      <div class="field">
+        <label for="call">Your call</label>
+        <input id="call" class="up" type="text" maxlength="16" placeholder="KC9MTP" spellcheck="false" autocapitalize="characters" required>
+      </div>
+      <div class="field">
+        <label for="code">Your code</label>
+        <input id="code" class="up" type="text" maxlength="24" placeholder="BAT7" spellcheck="false" autocapitalize="characters">
+      </div>
+    </div>
+    <button type="submit">Reach in</button>
+  </form>
+  <p class="note" style="margin-top:10px">Listening only, or missed check-in? The Spooky Wire has a code for everyone.</p>
+  <div id="cryptmsg" role="status" aria-live="polite"></div>
+  <div id="cardwrap">
+    <div id="verdict"></div>
+    <img id="cardimg" alt="">
+    <div class="btns">
+      <a id="dl" class="btn" download>Download picture</a>
+      <a class="btn ghost" href="./">Back to the event page</a>
+    </div>
+    <p class="note" style="margin-top:10px">On a phone, press and hold the picture to save it. Brag about it on the air.</p>
+  </div>
+</div>
+
+<h2>Code won't open?</h2>
+<div class="panel">
+  <div class="seg">
+    <ul>
+      <li>A code is a spooky word plus one number, like <code>BAT7</code>. The number is always 2 to 9, so an O is a letter, never a zero.</li>
+      <li>Capital letters and spaces don't matter.</li>
+      <li>Check your copy against the check-in readback. If a character got garbled, ask on the air for a fill. That's what nets are for.</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <p>An amateur radio event of the Digital Ham Workshop and the BDN (Bulletin Distribution) Net. Your call and code stay in your browser. Nothing you type here is sent anywhere.</p>
+  <p><a href="./">Spooky Net 2026</a> · <a href="../">All DHW Special Nets</a></p>
+</footer>
+
+</main>
+
+<script>
+/* The Candy Bowl. Each card is candy/<sha256("spooky26:"+CODE), 20 hex>.enc,
+   sealed by make_candy_bowl.py the same way as the Crypt: AES-256-GCM, key from
+   PBKDF2-SHA256 (100k) of the code, salt(16) | iv(12) | ciphertext+tag.
+   Plaintext is "TREAT\n" or "TRICK\n" + a 1200x900 JPEG. The call is only
+   drawn onto the picture here; it never leaves the browser.                   */
+(function(){
+  var W=1200, H=900, BAND=110;
+  var form=document.getElementById('candyform'), codeIn=document.getElementById('code'), callIn=document.getElementById('call'),
+      msg=document.getElementById('cryptmsg'), wrap=document.getElementById('cardwrap'), verdict=document.getElementById('verdict'),
+      img=document.getElementById('cardimg'), dl=document.getElementById('dl'), lastUrl=null;
+  function say(t,cls){msg.textContent=t;msg.className=cls||'';}
+  function norm(s){return s.toUpperCase().replace(/[^A-Z0-9]/g,'');}
+  function hex(buf){return Array.prototype.map.call(new Uint8Array(buf),function(b){return ('0'+b.toString(16)).slice(-2);}).join('');}
+  try{ callIn.value=localStorage.getItem('spooky26.call')||''; }catch(_){}
+
+  /* The picture plus a band underneath: "TREAT for KC9MTP" and the event name. */
+  function stamp(art,kind,call){
+    var c=document.createElement('canvas'); c.width=W; c.height=H+BAND;
+    var g=c.getContext('2d'), treat=kind==='TREAT';
+    g.fillStyle='#060a12'; g.fillRect(0,0,c.width,c.height);
+    g.drawImage(art,0,0,W,H);
+    g.fillStyle=treat?'#ff7a1a':'#b9a6ff'; g.fillRect(0,H,W,4);
+    var fam='"DejaVu Sans Mono",ui-monospace,Menlo,Consolas,"Liberation Mono",monospace';
+    var left=kind+' for '+call, px=52;
+    do{ g.font='800 '+px+'px '+fam; px-=2; }while(g.measureText(left).width>760&&px>24);
+    g.textBaseline='middle'; g.textAlign='left';
+    g.fillStyle=treat?'#ff7a1a':'#b9a6ff'; g.fillText(left,36,H+BAND/2+2);
+    g.font='700 26px '+fam; g.textAlign='right'; g.fillStyle='#f3ecd2';
+    g.fillText('SPOOKY NET 2026',W-36,H+BAND/2+2);
+    return c;
+  }
+
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var call=callIn.value.trim().toUpperCase().replace(/\s+/g,' '), code=norm(codeIn.value);
+    if(!call){say('Who goes there? Your call first.','bad');callIn.focus();return;}
+    if(!code){say('The bowl needs your code.','bad');codeIn.focus();return;}
+    if(!(window.crypto&&crypto.subtle)){say('This browser cannot reach into the bowl. Try a current Firefox, Chrome, Edge or Safari.','bad');return;}
+    try{ localStorage.setItem('spooky26.call',call); }catch(_){}
+    say('Rustle, rustle...');
+    var buf;
+    try{
+      var name=hex(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('spooky26:'+code))).slice(0,20);
+      var r=await fetch('candy/'+name+'.enc',{cache:'no-store'});
+      if(!r.ok) throw 0;
+      buf=new Uint8Array(await r.arrayBuffer());
+    }catch(_){
+      wrap.style.display='none';
+      say('Nothing in the bowl for '+code+'. Check the code against the readback.','bad');return;
+    }
+    var plain;
+    try{
+      var base=await crypto.subtle.importKey('raw',new TextEncoder().encode(code),'PBKDF2',false,['deriveKey']);
+      var key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:buf.slice(0,16),iterations:100000,hash:'SHA-256'},
+              base,{name:'AES-GCM',length:256},false,['decrypt']);
+      plain=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:buf.slice(16,28)},key,buf.slice(28)));
+    }catch(_){
+      wrap.style.display='none';
+      say('The wrapper is stuck. Tell NCS.','bad');return;
+    }
+    var kind=new TextDecoder().decode(plain.slice(0,5));
+    var art=new Image(), src=URL.createObjectURL(new Blob([plain.slice(6)],{type:'image/jpeg'}));
+    art.onload=function(){
+      URL.revokeObjectURL(src);
+      stamp(art,kind,call).toBlob(function(b){
+        if(lastUrl) URL.revokeObjectURL(lastUrl);
+        lastUrl=URL.createObjectURL(b);
+        img.src=lastUrl;
+        img.alt=(kind==='TREAT'?'A treat':'A trick')+' for '+call+': a Spooky Net 2026 Candy Bowl picture.';
+        dl.href=lastUrl;
+        dl.download='SpookyNet2026_'+kind+'_'+call.replace(/[^A-Z0-9]+/g,'_')+'.png';
+        wrap.className=kind==='TREAT'?'treat':'trick';
+        verdict.textContent=kind==='TREAT'?'Treat!':'Trick!';
+        wrap.style.display='block';
+        say(kind==='TREAT'?'Sweet. The monsters had a great night, '+call+'.':'Uh oh, '+call+'. Something got into your station.','good');
+      },'image/png');
+    };
+    art.onerror=function(){say('The candy crumbled. Tell NCS.','bad');};
+    art.src=src;
+  });
+})();
+</script>
+</body>
+</html>
